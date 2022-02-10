@@ -13,8 +13,8 @@ cargarEventListeners();
 function cargarEventListeners(){
     formulario.addEventListener('submit', agregarArticulo);
     document.addEventListener('DOMContentLoaded', agregarHtml);
+    listado.addEventListener('click', modificando)
     
-
 }
 
 
@@ -43,7 +43,7 @@ function agregarArticulo(e){
 
         formulario.reset()
     
-        guardarLocal()
+        guardarLocalStorage()
 
     }
 
@@ -52,7 +52,7 @@ function agregarArticulo(e){
 
 
 
-function guardarLocal (){
+function guardarLocalStorage (){
     localStorage.setItem('producto', JSON.stringify(articulos));
 
     agregarHtml();
@@ -71,25 +71,47 @@ function agregarHtml(){
     else {
         articulos.forEach(element => {
           listado.innerHTML += `
-          <div class="card">
+          <div id="contenedorT" class="card border border-danger mb-2">
           <h3 class="card-title text-info">${element.producto}</h3>
           <h4 class="card-subtitle mb-2 text-muted">${element.descripcion}</h4>
           <h5 class="card-text mb-2 text-warning">${element.uds} unidades</h5>   
-          <h5 class="card-text mb-3 text-warning">${element.precio} pesos</h5>
-          <img id="confirm" class="position-absolute bottom-0 end-0" style="width:30px" src="/assets/check.svg" alt="">     
+          <h5 class="card-text mb-3 text-warning">${element.precio} pesos ${element.estado}</h5>
+          <img id="confirm" class="position-absolute bottom-0 end-0" width="30px" src="/assets/check.svg" alt="">
+          <img id="delete" style="width:30px; position:absolute; bottom:0; right:30px" src="/assets/delete.svg" alt="">  
+          <img id="edit" style="width:30px; position:absolute; bottom:0; right:60px" src="/assets/edit.svg" alt="">   
           </div>
           `
         });
     }
 
+}
+
+function modificando (e){
+    e.preventDefault()
+    const textoComparativo = e.path[1].childNodes[1].childNodes[0].data
     
+    
+    // console.log(e.target.getAttribute('id'))
+    if(e.target.id.includes('delete')){
+        borrar(textoComparativo)}
 
-
-
+    else if(e.target.id.contains('confirm')){
+        
+    }
 }
 
 
+const borrar =(texto)=>{
+    let indexArray;
 
+    articulos.forEach((evento, index)=>{
+        if (texto === evento.producto){
+            indexArray = index
+        }
+    });
 
+   articulos.splice(indexArray, 1);
 
+   guardarLocalStorage();
+}
 
