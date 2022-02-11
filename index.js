@@ -11,7 +11,7 @@ let articulos = [];
 cargarEventListeners();
 
 function cargarEventListeners(){
-    formulario.addEventListener('submit', agregarArticulo);
+    document.querySelector('#solicitar').addEventListener('click', agregarArticulo);
     document.addEventListener('DOMContentLoaded', agregarHtml);
     listado.addEventListener('click', modificando)
     
@@ -28,7 +28,8 @@ function agregarArticulo(e){
         producto : document.querySelector('#producto').value,
         descripcion: document.querySelector('#descripcion').value,
         precio: document.querySelector('#precio').value,
-        estado: false
+        estado: false,
+        id: Date.now()
     }
 
     if(articulo.uds===''| articulo.producto===''| articulo.descripcion===''|articulo.precio===''){
@@ -36,13 +37,17 @@ function agregarArticulo(e){
         return
     }
     else{
+        success.setAttribute('style','display:block');
+        setTimeout(()=>{
+            success.setAttribute('style','display:none');
+          }, 1000);             
 
         warning.setAttribute('style', 'display:none');
 
         articulos.unshift(articulo);
 
         formulario.reset()
-    
+
         guardarLocalStorage()
 
     }
@@ -54,6 +59,7 @@ function agregarArticulo(e){
 
 function guardarLocalStorage (){
     localStorage.setItem('producto', JSON.stringify(articulos));
+
 
     agregarHtml();
     
@@ -70,17 +76,33 @@ function agregarHtml(){
     }
     else {
         articulos.forEach(element => {
+            if(element.estado){
+                listado.innerHTML += `
+                <div id="contenedorT" class="card border border-success bg-success bg-opacity-10 mb-2">
+                <h3 class="card-title text-info">${element.producto}</h3>
+                <h4 class="card-subtitle mb-2 text-muted">${element.descripcion}</h4>
+                <h5 class="card-text mb-2 text-warning">${element.uds} unidades</h5>   
+                <h5 class="card-text mb-3 text-warning">${element.precio} pesos  </h5>
+                <img id="confirm" class="position-absolute bottom-0 end-0" width="30px" src="/assets/check.svg" alt="">
+                <img id="delete" style="width:30px; position:absolute; bottom:0; right:30px" src="/assets/delete.svg" alt="">  
+                <img id="edit" style="width:30px; position:absolute; bottom:0; right:60px" src="/assets/edit.svg" alt="">   
+                </div>
+                `
+
+            }
+
+            else{
           listado.innerHTML += `
-          <div id="contenedorT" class="card border border-danger mb-2">
+          <div id="contenedorT" class="card border border-danger bg-danger bg-opacity-10 mb-2">
           <h3 class="card-title text-info">${element.producto}</h3>
           <h4 class="card-subtitle mb-2 text-muted">${element.descripcion}</h4>
           <h5 class="card-text mb-2 text-warning">${element.uds} unidades</h5>   
-          <h5 class="card-text mb-3 text-warning">${element.precio} pesos ${element.estado}</h5>
+          <h5 class="card-text mb-3 text-warning">${element.precio} pesos  </h5>
           <img id="confirm" class="position-absolute bottom-0 end-0" width="30px" src="/assets/check.svg" alt="">
           <img id="delete" style="width:30px; position:absolute; bottom:0; right:30px" src="/assets/delete.svg" alt="">  
           <img id="edit" style="width:30px; position:absolute; bottom:0; right:60px" src="/assets/edit.svg" alt="">   
           </div>
-          `
+          `}
         });
     }
 
@@ -95,9 +117,11 @@ function modificando (e){
     if(e.target.id.includes('delete')){
         borrar(textoComparativo)}
 
-    else if(e.target.id.contains('confirm')){
-        
-    }
+    else if(e.target.id.includes('confirm')){
+        confirmar(textoComparativo)}
+
+        else if(e.target.id.includes('edit')){
+            editar(textoComparativo)}
 }
 
 
@@ -115,3 +139,57 @@ const borrar =(texto)=>{
    guardarLocalStorage();
 }
 
+const confirmar = (texto)=>{
+
+    let indexArray = articulos.findIndex((evento)=>{
+      return evento.producto === texto
+    });
+    
+    articulos[indexArray].estado = true;
+
+    guardarLocalStorage();  
+}
+
+const editar = (texto)=>{
+
+    let indexArray= articulos.findIndex((evento)=>{
+        return evento.producto === texto
+    });
+
+    console.log(indexArray);
+
+    document.querySelector('#unidades').value = articulos[indexArray].uds
+    document.querySelector('#producto').value = articulos[indexArray].producto
+    document.querySelector('#descripcion').value = articulos[indexArray].descripcion
+    document.querySelector('#precio').value = articulos[indexArray].precio
+    document.querySelector('#id').innerHTML = articulos[indexArray].id
+    
+    document.querySelector('#solicitar').style.display = 'none'
+    document.querySelector('#actualizar').style.display = 'block'
+
+}
+
+document.querySelector('#actualizar').addEventListener('click', actualizar);
+
+function actualizar (e){
+    e.preventDefault();
+    let unidades =document.querySelector('#unidades').value
+    let producto = document.querySelector('#producto').value
+    let descripcion = document.querySelector('#descripcion').value
+    let precio = document.querySelector('#precio').value
+    let id = document.querySelector('#id').innerHTML
+
+    let indexArray = articulos.findIndex((elemento)=>
+    elemento.id == id);
+
+    document.querySelector('#solicitar').style.display = 'block'
+    document.querySelector('#actualizar').style.display = 'none'
+
+    formulario.reset()
+
+    articulos[indexArray].uds = unidades
+    articulos[indexArray].producto = producto
+    articulos[indexArray].descripcion = descripcion
+    articulos[indexArray].precio = precio
+    guardarLocalStorage()
+}

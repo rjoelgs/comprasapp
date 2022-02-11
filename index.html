@@ -8,7 +8,7 @@
     <title>Compras App</title>
 </head>
 <body>
-       <div class="container">
+       <div class="container" style="min-height:700px;">
         <div class="row">
             <div class="col-12">
                 <header>
@@ -23,9 +23,12 @@
            <div class="col-12 col-md-6 mb-5" id="div1">
                <h2 class="text-secondary">Articulos</h2>
                <hr>
+               <div id="success" class="text-success bg-success bg-opacity-25 text-center" style="display: none;">
+                la solicitud de compra se ha agregado</div>           
                <div id="warning" class="text-danger bg-danger bg-opacity-25 text-center" style="display: none;">
                    se debe de llenar todos los campos</div>
-               <form class=" g-10 need-validation" id="formulario" action="form">
+
+               <form class=" g-10 need-validation" id="formulario">
                   
                     <div class=" input-group mb-2">
                         <span class="input-group-text" for="unidades">unidades</span>
@@ -46,9 +49,13 @@
                         <span class="input-group-text" for="precio">precio</span>
                         <input class="form-control" id="precio" type="number">
                     </div>
+                    <div>
+                        <span style="display:none" id="id"></span>
+                    </div>
    
                    <div>
-                    <button class="btn btn-primary" type="submit">Solicitar Compra</button>
+                    <button class="btn btn-primary" type="submit" id="solicitar">Solicitar Compra</button>
+                    <button class="btn btn-warning" style="display: none;" id="actualizar">Actualizar</button>
                   </div>
                </form>
    
@@ -57,7 +64,7 @@
                <h2 class="text-secondary">listado</h2>
                <hr>
 
-               <div class="card" id="listado">
+               <div  id="listado">
        
                </div>
            </div>
@@ -65,6 +72,14 @@
         </main>
 
        </div> 
+
+       <footer class="mt-2" style="text-align: center;">
+            <h5>2022, Dgo. Todos los derechos reservados</h5>
+            <div>
+
+            </div>
+       </footer>
+
 
 <script src="/index.js"></script>
 </body>
